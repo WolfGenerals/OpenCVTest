@@ -12,17 +12,17 @@ void show(const Mat &imageRed, const char *title) {
 
 void getColor(const Mat &in, int lower, int upper, Mat &out) {
     if (lower >= 0) {
-        inRange(in, Scalar(lower, 0, 50), Scalar(upper, 255, 255), out);
+        inRange(in, Scalar(lower, 20, 80), Scalar(upper, 235, 255), out);
     } else {
         Mat mark1;
         Mat mark2;
-        inRange(in, Scalar(0, 0, 50), Scalar(upper, 255, 255), mark1);
-        inRange(in, Scalar(180 + lower, 0, 50), Scalar(180, 255, 255), mark2);
+        inRange(in, Scalar(0, 20, 80), Scalar(upper, 235, 255), mark1);
+        inRange(in, Scalar(180 + lower, 20, 80), Scalar(180, 235, 255), mark2);
         out = mark1 + mark2;
     }
-    erode(out, out, getStructuringElement(0, Size(5, 5)), Point(-1, -1), 4);
+    erode(out, out, getStructuringElement(0, Size(9, 9)), Point(-1, -1), 4);
 //    erode( out, out, getStructuringElement(0, Size(13, 13)));
-    dilate(out, out, getStructuringElement(0, Size(5, 5)), Point(-1, -1), 5);
+    dilate(out, out, getStructuringElement(0, Size(9, 9)), Point(-1, -1), 4);
 //    dilate(out, out, getStructuringElement(0, Size(13, 13)));
 }
 
@@ -54,7 +54,7 @@ void writeOnImage(const Mat &image, const vector<vector<Point>> &contours, vecto
                 FONT_HERSHEY_PLAIN,
                 0.5,
                 color);
-        cout << point.x << "|" << point.y << endl;
+//        cout << point.x << "|" << point.y << endl;
     }
 }
 
@@ -79,25 +79,39 @@ void handle(Mat &image) {
     vector<vector<Point>> contoursB;
     vector<Point> centresB;
 
-    getInfo(image, cacheR, contoursR, centresR, -5, 5);
-    getInfo(image, cacheB, contoursB, centresB, 100, 120);
+    getInfo(image, cacheR, contoursR, centresR, -20, 3);
+    getInfo(image, cacheB, contoursB, centresB, 80, 150);
     writeOnImage(image, contoursR, centresR,Scalar(255, 255, 0));
     writeOnImage(image, contoursB, centresB,Scalar(0, 255, 255));
 }
 
 
 int main() {
-    const Scalar_<double> &color = Scalar(255, 255, 0);
-
+//    string url ="rtsp://10.237.49.125:8554/live";
+//    cin >> url;
     Mat image = imread("/home/wolfgenerals/projects/OpenCVTest/data/Untitled 5.png");
-
-
-    show(image, "1");
     handle(image);
-    show(image, "2");
+    namedWindow("1",WINDOW_AUTOSIZE);
+    imshow("1", image);
 
-    waitKey(10000);
-    return 0;
+    cout << "231;";
+    VideoCapture camera = VideoCapture("rtsp://172.27.160.1");
+//     (camera.getBackendName());
+    cout << "233;";
+//    camera.open();
+    if (!camera.isOpened()) return 1;
+    namedWindow("input",WINDOW_AUTOSIZE);
+    namedWindow("output",WINDOW_AUTOSIZE);
+    cout << "233;";
+
+    while (true) {
+        camera >> image;
+        imshow("input", image);
+        handle(image);
+        imshow("output", image);
+        waitKey(1);
+
+    }
 }
 
 
