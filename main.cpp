@@ -32,11 +32,14 @@ void getContours(const Mat &in, vector<vector<Point>> &out) {
 }
 
 Point getCentre(const vector<Point> &in) {
-    Point centre = Point(0, 0);
-    for (const auto &point: in)
-        centre += point;
-    centre *= (1.0 / in.size());
-    return centre;
+    const Moments &moments1 = moments(in);
+
+//    Point centre = Point(0, 0);
+//    for (const auto &point: in)
+//        centre += point;
+//    centre *= (1.0 / in.size());
+//    return centre;
+    return Point(moments1.m10/moments1.m00,moments1.m01/moments1.m00);
 }
 
 void writeOnImage(const Mat &image, const vector<vector<Point>> &contours, vector<Point> &centres,
